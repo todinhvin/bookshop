@@ -1,0 +1,134 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@page import="com.laptrinhweb.util.SecurityUtils" %>
+<%@include file ="/common/taglib.jsp" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+        <!-- Hero Area Start-->
+        <div class="slider-area ">
+            <div class="single-slider slider-height2 d-flex align-items-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="hero-cap text-center">
+                                <h2>Checkout</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--================Checkout Area =================-->
+        <section class="checkout_area section_padding">
+          <div class="container">
+            <div class="billing_details">
+              <div class="row">
+
+               <div class="col-md-8">
+      <h4 class="mb-3">Billing address</h4>
+      <form class="needs-validation" novalidate="">
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label for="firstName">Full name</label>
+            <input type="text" class="form-control" id="firstName" placeholder="" value="<%=SecurityUtils.getPrincipal().getFullName()%>" required="">
+            <div class="invalid-feedback">
+              Valid Full name is required.
+            </div>
+          </div>
+         
+        </div>
+
+        <div class="mb-3">
+          <label for="email">Email <span class="text-muted">(Optional)</span></label>
+          <input type="email" class="form-control" id="email" placeholder="you@example.com" value ="<%=SecurityUtils.getPrincipal().getEmail()%>">
+          <div class="invalid-feedback">
+            Please enter a valid email address for shipping updates.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="address">Address</label>
+          <input type="text" class="form-control" id="address" placeholder="1234 Main St" >
+          <div class="invalid-feedback">
+            Please enter your shipping address.
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="address">Note</label>
+          <textarea  class="form-control" id="note" placeholder="1234 Main St" style="height:134px" ></textarea>
+        </div>
+      </form>
+    </div>
+                <div class="col-lg-4">
+                  <div class="order_box">
+                    <h2>Your Order</h2>
+                    <ul class="list">
+                      <li>
+                        <a href="#">Product
+                          <span>Total</span>
+                        </a>
+                      </li>
+                      <c:forEach var="item" items ="${listCart}">
+                       <li>
+                        <a href="#">
+                        ${item.bookDTO.title}
+                         
+                          <span class="last">${item.quantity*item.price}</span>
+                        </a>
+                      </li>
+                      </c:forEach>
+                      <li>
+                        <a href="#">Total
+                          <span>${totalPrice}</span>
+                        </a>
+                      </li>
+                    </ul>
+                    <a id="btnCheckout" class="btn_3" href="#">Đặt hàng</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!--================End Checkout Area =================-->
+        <script>
+        $(document).ready(function(){
+    		$('#btnCheckout').click(function(e){
+    			e.preventDefault();
+    			var formData  = new FormData();
+    			formData.append('userId',${user_id});
+    			formData.append('deliveryAddress',$('#address').val());
+    			formData.append('note',$('#note').val());
+    			var data={};
+    	        for(var item of formData.entries()){
+    	            data[""+item[0]+""] =item[1];
+    	        }
+    	        addCheckout(data);
+    		})
+    		
+    		function addCheckout(data){
+    			$.ajax({
+    				url:'/api/order/checkout_order',
+    				type:'POST',
+    				dataType : 'json',
+            		contentType: 'application/json',
+    				data : JSON.stringify(data),
+    				success: function(){
+    					swal("", "Đặt hàng thành công", "success");
+    				},
+    				error : function(){
+    					swal("", "Đặt hàng không thành công", "error");
+    				}
+    			})
+    		}
+    	})
+
+        </script>
+</body>
+</html>

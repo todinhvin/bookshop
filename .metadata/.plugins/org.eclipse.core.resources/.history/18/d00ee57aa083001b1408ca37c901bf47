@@ -1,0 +1,14 @@
+package com.laptrinhweb.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.laptrinhweb.entity.UserEntity;
+
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
+	UserEntity findOneByUserNameAndStatus(String username, Integer status);
+
+	@Query("Select user FROM UserEntity user WHERE user.email =:email OR user.username=:username")
+	Optional<CartEntity> checkAccountExists(@Param("email") String email, @Param("username") String username);
+
+}

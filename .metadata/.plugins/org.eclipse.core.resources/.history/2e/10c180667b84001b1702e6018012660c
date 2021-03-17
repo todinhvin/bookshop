@@ -1,0 +1,11 @@
+package com.laptrinhweb.service;
+
+import java.util.List;
+import java.util.Map;
+
+public interface ICategoryService {
+	
+	public Map<String, String> getCategoryList();
+	public List<CateogoryDTO> findAll();
+
+}

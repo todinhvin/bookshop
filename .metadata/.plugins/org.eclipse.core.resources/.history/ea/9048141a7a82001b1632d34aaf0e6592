@@ -1,0 +1,42 @@
+package com.laptrinhweb.controller.web;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.laptrinhweb.dto.CartDTO;
+import com.laptrinhweb.util.MD5Utils;
+import com.laptrinhweb.util.ValidationCartInfor;
+
+@RestController
+public class RegisterController {
+
+	@RequestMapping(value = "/api/register")
+	public ResponseEntity<?> addCart(@RequestBody HashMap<String, String> registerRequest) {
+
+		try {
+			String keys[] = { "fullname", "username", "email", "phone_number","password" };
+			if(ValidationCartInfor.validationInformation(keys, registerRequest)) {
+				String password = MD5Utils.getMd5(registerRequest.get("password"));
+				long productId = Long.parseLong(addCartRequest.get("productId"));
+				long userId = Long.parseLong(addCartRequest.get("userId"));
+				Integer quantity = Integer.parseInt(addCartRequest.get("quantity"));
+				double price = Double.parseDouble(addCartRequest.get("price"));
+				List<CartDTO> cartList = cartService.addCartByUserIdAndProductId(productId, userId, quantity, price);
+				return ResponseEntity.ok(cartList);
+			} else {
+				return ResponseEntity.badRequest().body("");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body("");
+		}
+
+	}
+}

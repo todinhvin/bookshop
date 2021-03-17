@@ -1,0 +1,17 @@
+
+package com.laptrinhweb.service;
+
+import java.util.HashMap;
+
+import com.laptrinhweb.dto.CartDTO;
+
+public interface ICartService {
+	/*
+	 * List<CheckoutDTO> saveProductForCheckout(List<CheckoutDTO> list) throws
+	 * Exception;
+	 * 
+	 * int getCountCheckoutCart();
+	 */
+	public HashMap<Long, CartDTO> addCart(long book_id,Integer quantity,double price,HashMap<Long, CartDTO> cart);
+	public HashMap<Long, CartDTO> removeCart(long book_id,HashMap<Long, CartDTO> cart);
+}

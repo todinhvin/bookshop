@@ -1,0 +1,17 @@
+/*
+ * package com.laptrinhweb.service;
+ * 
+ * import java.util.List;
+ * 
+ * import org.springframework.web.bind.annotation.RequestParam;
+ * 
+ * import com.laptrinhweb.dto.CartDTO; import com.laptrinhweb.dto.CheckoutDTO;
+ * import com.laptrinhweb.entity.CartEntity;
+ * 
+ * public interface ICartService { List<CartDTO>
+ * addCartByUserIdAndProductId(long productId, long userId, Integer quantity,
+ * double price) throws Exception; List<CartDTO> getCartByUserId(long userId);
+ * List<CartDTO> removeCartByUserId(long cartId, long userId); List<CheckoutDTO>
+ * saveProductForCheckout(List<CheckoutDTO> list) throws Exception; int
+ * getCountCheckoutCart(); }
+ */

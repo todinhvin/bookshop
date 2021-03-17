@@ -1,0 +1,8 @@
+package com.laptrinhweb.service;
+
+public interface IUserService {
+	
+	/* public boolean checkAccountExists(String username,String email); */
+	public void addUser(String fullname,String username,String password, String email,String phonenumber);
+
+}

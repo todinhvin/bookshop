@@ -1,0 +1,66 @@
+
+package com.laptrinhweb.controller.web;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.laptrinhweb.dto.CartDTO;
+import com.laptrinhweb.dto.CheckoutDTO;
+import com.laptrinhweb.service.impl.CartService;
+import com.laptrinhweb.util.ValidationCartInfor;
+
+@RestController
+
+@RequestMapping("api/order")
+public class OrderController {
+
+	@Autowired
+	private CartService cartService;
+
+	@Autowired
+	private ValidationCartInfor validation;
+
+	@RequestMapping("checkout_order")
+	public ResponseEntity<?> addCart(HttpSession session) {
+
+		HashMap<Long,CartDTO> cartList = (HashMap<Long,CartDTO>)session.getAttribute("myCart");
+		
+		List<CheckoutDTO> checkoutList = new ArrayList<>();
+		for (Map.Entry<Long, CartDTO> item : cartList.entrySet()) {
+		
+		}
+		for (CartDTO cart : cartList) {
+			String orderId = "" + getOrderId();
+			CheckoutDTO checkoutDTO = new CheckoutDTO();
+			checkoutDTO.setOrder_id(orderId);
+			checkoutDTO.setDelivery_address(checkoutRequest.get("deliveryAddress"));
+			checkoutDTO.setNote(checkoutRequest.get("note"));
+			checkoutDTO.setUser_id(userId);
+			checkoutDTO.setProduct_id(cart.getBook_id());
+			checkoutDTO.setPrice(cart.getPrice());
+			checkoutDTO.setQuantity(cart.getQuantity());
+			checkoutDTO.setOrder_date(new Date());
+			checkoutList.add(checkoutDTO);
+		}
+
+		return ResponseEntity.ok(cartService.saveProductForCheckout(checkoutList));
+	}
+
+	public int getOrderId() {
+		Random r = new Random(System.currentTimeMillis());
+		return 10000 + r.nextInt(20000);
+	}
+
+}

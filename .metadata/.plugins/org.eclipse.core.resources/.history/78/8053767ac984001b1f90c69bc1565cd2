@@ -1,0 +1,108 @@
+
+package com.laptrinhweb.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.laptrinhweb.converter.CartConverter;
+import com.laptrinhweb.converter.CheckoutConverter;
+import com.laptrinhweb.dto.CartDTO;
+import com.laptrinhweb.dto.CheckoutDTO;
+import com.laptrinhweb.entity.CartEntity;
+import com.laptrinhweb.entity.CheckoutEntity;
+import com.laptrinhweb.repository.CartRepository;
+import com.laptrinhweb.repository.CheckoutRepository;
+import com.laptrinhweb.repository.UserRepository;
+import com.laptrinhweb.service.ICartService;
+
+@Service
+public class CartService implements ICartService {
+
+	@Autowired
+	private CartRepository cartRepository;
+
+	@Autowired
+	private CartConverter cartConverter;
+
+	@Autowired
+	private CheckoutRepository checkoutRepo;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private CheckoutConverter checkoutConverter;
+
+	@Override
+	public List<CartDTO> addCartByUserIdAndProductId(long productId, long userId, Integer quantity, double price)
+			throws Exception {
+		try {
+			if (cartRepository.getCartByUserIdAndProductId(userId, productId).isPresent()) { // throw new
+																								// Exception("Product is
+																								// already exist");
+																								// CartEntity cartEntity
+																								// =
+				cartRepository.getcartByUserIdAndProductId(userId, productId);
+				cartEntity.setQuantity(quantity);
+				cartEntity.setPrice(price);
+				cartRepository.save(cartEntity);
+			} else {
+				CartEntity cartEntity = new CartEntity();
+				cartEntity.setBook_id(productId);
+				// cartEntity.setUserEntity(userRepository.findOne(userId));
+				cartEntity.setQuantity(quantity);
+				cartEntity.setPrice(price);
+				cartRepository.save(cartEntity);
+			}
+			return this.getCartByUserId(userId);
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
+
+	}
+
+	@Override
+	public List<CartDTO> getCartByUserId(long userId) {
+
+		List<CartEntity> list = cartRepository.getCartByUserId(userId);
+		List<CartDTO> listCart = new ArrayList<CartDTO>();
+		for (CartEntity cart : list) {
+			listCart.add(cartConverter.toDTO(cart));
+		}
+		return listCart;
+	}
+
+	@Override
+	public List<CartDTO> removeCartByUserId(long cartId, long userId) {
+		cartRepository.deleteCartByIdAndUserId(userId, cartId);
+		return this.getCartByUserId(userId);
+	}
+
+	@Override
+	public List<CheckoutDTO> saveProductForCheckout(List<CheckoutDTO> list) throws Exception {
+		try {
+			long userId = list.get(0).getUser_id();
+			for (CheckoutDTO dto : list) {
+				checkoutRepo.save(checkoutConverter.toEntity(dto));
+			}
+			cartRepository.deleteAllCartByUserId(userId);
+			List<CheckoutEntity> checkOutList = checkoutRepo.getCheckoutCartByUserId(userId);
+			List<CheckoutDTO> results = new ArrayList<CheckoutDTO>();
+			for (CheckoutEntity entity : checkOutList) {
+				results.add(checkoutConverter.toDTO(entity));
+			}
+			return results;
+		} catch (Exception e) {
+			throw new Exception(e.getMessage());
+		}
+	}
+
+	@Override
+	public int getCountCheckoutCart() {
+		return checkoutRepo.countCheckoutCart();
+	}
+
+}

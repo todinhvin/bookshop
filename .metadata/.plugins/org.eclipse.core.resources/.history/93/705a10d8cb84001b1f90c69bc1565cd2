@@ -1,0 +1,89 @@
+
+package com.laptrinhweb.controller.web;
+
+import java.util.HashMap;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.laptrinhweb.dto.CartDTO;
+import com.laptrinhweb.entity.CartEntity;
+import com.laptrinhweb.service.impl.CartService;
+import com.laptrinhweb.util.ValidationCartInfor;
+
+@RestController
+
+@RequestMapping("api/addToCart")
+public class CartController {
+
+	@Autowired
+	private CartService cartService;
+
+	@Autowired
+	private ValidationCartInfor validation;
+
+	@RequestMapping("addProduct")
+	public HashMap<Long, CartDTO> addCart(@RequestBody HashMap<String, String> addCartRequest, HttpSession session) {
+		
+		try {
+			String keys[] = { "productId", "userId", "quantity", "price" };
+			if (validation.validationInformation(keys, addCartRequest)) {
+				long productId = Long.parseLong(addCartRequest.get("productId"));
+				long userId = Long.parseLong(addCartRequest.get("userId"));
+				Integer quantity = Integer.parseInt(addCartRequest.get("quantity"));
+				double price = Double.parseDouble(addCartRequest.get("price"));
+				List<CartDTO> cartList = cartService.addCartByUserIdAndProductId(productId, userId, quantity, price);
+				return ResponseEntity.ok(cartList);
+			} else {
+				return ResponseEntity.badRequest().body("");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body("");
+		}
+
+	}
+
+	@RequestMapping("removeProductFromCart")
+	public ResponseEntity<?> removeCartWithProductId(@RequestBody HashMap<String, String> removeCartRequest) {
+		try {
+			String keys[] = { "cartId", "userId" };
+			if (validation.validationInformation(keys, removeCartRequest)) {
+				long cartId = Long.parseLong(removeCartRequest.get("cartId"));
+				long userId = Long.parseLong(removeCartRequest.get("userId"));
+				List<CartDTO> cartList = cartService.removeCartByUserId(cartId, userId);
+				return ResponseEntity.ok(cartList);
+			} else {
+				return ResponseEntity.badRequest().body("");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body("");
+		}
+	}
+
+	@RequestMapping("getCartsByUserId")
+	public ResponseEntity<?> getCartsByUserId(@RequestBody HashMap<String, String> getCartRequest) {
+		try {
+			String keys[] = { "userId" };
+			if (validation.validationInformation(keys, getCartRequest)) {
+				long userId = Long.parseLong(getCartRequest.get("userId"));
+				List<CartDTO> cartList = cartService.getCartByUserId(userId);
+				return ResponseEntity.ok(cartList);
+			} else {
+				return ResponseEntity.badRequest().body("");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body("");
+		}
+	}
+
+}
